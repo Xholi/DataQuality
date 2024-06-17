@@ -1,4 +1,5 @@
 import streamlit as st
+pip install plotly
 import pandas as pd
 import re
 import numbers
