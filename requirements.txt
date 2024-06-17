@@ -2,7 +2,6 @@ streamlit
 joblib
 numpy
 plotly
-pyodbc==2.1. 8
 smtplib
 email
 pandas
