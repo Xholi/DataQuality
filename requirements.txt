@@ -2,3 +2,7 @@ streamlit
 joblib
 numpy
 plotly
+pyodbc
+smtplib
+email
+pandas
