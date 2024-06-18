@@ -10,7 +10,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-
 # Function definitions
 def validate_column_type(df, column_name, expected_type):
     return df[column_name].map(lambda x: isinstance(x, expected_type))
@@ -92,6 +91,16 @@ if data_source == 'Upload CSV':
     file_upload = st.sidebar.file_uploader("Choose a CSV file", type="csv")
     if file_upload is not None:
         df = pd.read_csv(file_upload)
+        required_columns = [
+            'CORP_NO', 'ERP_NUMBER', 'DESCRIPTOR_TERM', 'PROPERTY_TERM', 'PROPERTY_VALUE', 
+            'POD', 'PROP_FFT', 'PROPERTY_UOM', 'UOM_RULES', 'VALUE_TYPE_RULES', 
+            'DATA_TYPE', 'ORIGINATING_PLANT_TRM', 'ORIGINATING_DIVISION', 'PLANT_GROUP', 
+            'MAND_IND', 'MAND_EMPTY'
+        ]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            st.sidebar.error(f"Missing required columns: {', '.join(missing_columns)}")
+            st.stop()
     else:
         st.sidebar.warning("Please upload a CSV file to proceed.")
         st.stop()
@@ -105,6 +114,16 @@ else:
         try:
             conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
             df = pd.read_sql(query, conn)
+            required_columns = [
+                'CORP_NO', 'ERP_NUMBER', 'DESCRIPTOR_TERM', 'PROPERTY_TERM', 'PROPERTY_VALUE', 
+                'POD', 'PROP_FFT', 'PROPERTY_UOM', 'UOM_RULES', 'VALUE_TYPE_RULES', 
+                'DATA_TYPE', 'ORIGINATING_PLANT_TRM', 'ORIGINATING_DIVISION', 'PLANT_GROUP', 
+                'MAND_IND', 'MAND_EMPTY'
+            ]
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            if missing_columns:
+                st.sidebar.error(f"Missing required columns: {', '.join(missing_columns)}")
+                st.stop()
         except Exception as e:
             st.sidebar.error(f"Error: {e}")
             st.stop()
@@ -266,4 +285,3 @@ if st.sidebar.button("Send Email"):
             st.sidebar.success("Email sent successfully!")
         except Exception as e:
             st.sidebar.error(f"Error sending email: {e}")
-
