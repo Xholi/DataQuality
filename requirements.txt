@@ -3,4 +3,3 @@ pandas
 plotly
 smtplib
 email
-pyodbc
