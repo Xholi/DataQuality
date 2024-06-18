@@ -87,10 +87,20 @@ else:
 st.sidebar.title("Upload Data")
 data_source = st.sidebar.radio("Choose Data Source", ('Upload CSV', 'SQL Database'))
 
+@st.cache_data
+def load_csv(file):
+    return pd.read_csv(file)
+
+@st.cache_data
+def load_sql(server, database, username, password, query):
+    import pyodbc
+    conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
+    return pd.read_sql(query, conn)
+
 if data_source == 'Upload CSV':
     file_upload = st.sidebar.file_uploader("Choose a CSV file", type="csv")
     if file_upload is not None:
-        df = pd.read_csv(file_upload)
+        df = load_csv(file_upload)
         required_columns = [
             'CORP_NO', 'ERP_NUMBER', 'DESCRIPTOR_TERM', 'PROPERTY_TERM', 'PROPERTY_VALUE', 
             'POD', 'PROP_FFT', 'PROPERTY_UOM', 'UOM_RULES', 'VALUE_TYPE_RULES', 
@@ -112,8 +122,7 @@ else:
     query = st.sidebar.text_area("SQL Query")
     if st.sidebar.button("Fetch Data"):
         try:
-            conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
-            df = pd.read_sql(query, conn)
+            df = load_sql(server, database, username, password, query)
             required_columns = [
                 'CORP_NO', 'ERP_NUMBER', 'DESCRIPTOR_TERM', 'PROPERTY_TERM', 'PROPERTY_VALUE', 
                 'POD', 'PROP_FFT', 'PROPERTY_UOM', 'UOM_RULES', 'VALUE_TYPE_RULES', 
@@ -207,7 +216,7 @@ with col2:
     st.plotly_chart(fig_gauge_pod)
 
 st.markdown("<br>", unsafe_allow_html=True)  # Add space between gauges
-# st.markdown("<br>", unsafe_allow_html=True) 
+
 with col3:
     fig_gauge_completeness = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -221,19 +230,15 @@ with col3:
 # Show validation results as tables
 st.header("Validation Results")
 
-# st.subheader("Passed Validation Checks")
 passed_df = pd.DataFrame({
     "Validation Check": list(passed_percentage.keys()),
     "Passed Percentage": list(passed_percentage.values())
 })
-# st.dataframe(passed_df)
 
-# st.subheader("Failed Validation Checks")
 failed_df = pd.DataFrame({
     "Validation Check": list(failed_percentage.keys()),
     "Failed Percentage": list(failed_percentage.values())
 })
-# st.dataframe(failed_df)
 
 # Bar Chart of Validation Results
 labels = list(passed_percentage.keys())
