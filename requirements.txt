@@ -1,5 +1,6 @@
 streamlit
-joblib
-numpy
+pandas
 plotly
-
+smtplib
+email
+pyodbc
