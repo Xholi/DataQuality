@@ -87,11 +87,11 @@ else:
 st.sidebar.title("Upload Data")
 data_source = st.sidebar.radio("Choose Data Source", ('Upload CSV', 'SQL Database'))
 
-@st.cache_data
+
 def load_csv(file):
     return pd.read_csv(file)
 
-@st.cache_data
+
 def load_sql(server, database, username, password, query):
     import pyodbc
     conn = pyodbc.connect(f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
