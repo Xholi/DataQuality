@@ -1,5 +1,5 @@
 streamlit
 pandas
 plotly
-smtplib
 email
+matplotlib
